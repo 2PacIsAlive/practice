@@ -25,10 +25,10 @@ class Graph():
 		self.DFS_path.append(start.ID)
 		if start == end:
 			print "Path found!"
-			return self.DFS_path
+			return
 		else:
 			for child in start.children:
-				return(self.DFS(child,end))			
+				self.DFS(child,end)					
 	
 class Node():
 	def __init__(self,name):
@@ -94,8 +94,8 @@ def main():
 	path = g.BFS(start,end)
 	print " --> ".join(path)
 	print "\n DFS:"
-	path = g.DFS(start,end)
-	print " --> ".join(path)
+	g.DFS(start,end)
+	print " --> ".join(g.DFS_path)
 	
 if __name__=="__main__":
 	main()
