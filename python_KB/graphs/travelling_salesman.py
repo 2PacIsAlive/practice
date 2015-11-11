@@ -29,6 +29,7 @@ class Search():
 		self.graph = graph
 		self.vertQueue = []
 		self.randomChoice = None
+		self.numChildren = 50
 
 	def findPath(self,node,goal):
 		node[0].visited = True
@@ -93,10 +94,12 @@ class Search():
 					return True
 		return False	
 
+	#this function has flawed logic!!!
 	def getRandom(self,adjacent):
-		#print "searching for neighbors of", adjacent[0][0].ID
-		cpy = adjacent
-		#print cpy
+		cpy = list(filter((lambda x: x[1].visited == False),adjacent))
+		if cpy == []:
+			self.randomChoice = self.goal
+			return
 		rand = random.choice(cpy)
 		if rand[1] == self.goal:
 			if self.remainingUnvisited(cpy) == True:
@@ -124,48 +127,6 @@ class Search():
 				#cpy.remove(rand)
 				self.getRandom(cpy)
 
-	'''	
-	def getRandom(self,adjacent):
-		cpy = adjacent
-		cont = True
-		remaining = False
-		while cont == True:
-			rand = random.choice(cpy)
-			if rand[1] == self.goal:
-				for combo in cpy:
-					if combo[1].visited == False and combo[1] != self.goal:
-						remaining = True
-				if remaining == True:
-					pass
-				else:
-					self.randomChoice = rand[1]
-					cont = False	
-			
-			else:
-				if rand[1].visited == False:
-					self.randomChoice = rand[1]
-					cont = False
-				else:
-					pass	
-		return
-
-	def getRandom(self, adjacent):
-		if len(adjacent) == 1:
-			self.randomChoice = self.goal
-			return
-		rand = random.choice(adjacent)
-		if rand[1] != self.goal:
-			if rand[1].visited == False:
-				self.randomPathCost += rand[2]
-				self.randomChoice = rand[1]	
-				return 
-			else:
-				adjacent.remove(rand)
-				self.getRandom(adjacent)
-		else:
-			self.getRandom(adjacent)
-	'''
-
 	def genRandomPaths(self,node,goal):
 		self.path.append(node)
 		copy = self.matrix[node.ID]
@@ -179,7 +140,7 @@ class Search():
 				self.path = []
 				for i in self.graph:
 					i.visited = False
-				if len(self.randompaths) == 10:
+				if len(self.randompaths) == self.numChildren:
 					return
 				else:
 					self.genRandomPaths(node,goal)
@@ -192,10 +153,87 @@ class Search():
 			self.getRandom(copy)
 			self.genRandomPaths(self.randomChoice, goal)
 	
+	def findIndex(self,node,path):
+		index = 0
+		for item in path:
+			if item == node:
+				return index
+			index += 1
+		print "Node not found."
+
+	def add_to_path(self, index, list1, list2, newPath):
+		if newPath == []:
+			newPath.append(self.start)
+			return newPath
+		if len(newPath) == len(list1)-1:
+			newPath.append(self.goal)
+			return newPath
+		if index == len(list1)-1:
+			newIndex = findIndex(list2[index], list1)
+			newPath.append(list1[newIndex+1])
+			return newPath
+		if list1[index+1] not in newPath:
+			newPath.append(list1[index+1])
+			return newPath
+		else:
+			newPath.append(list2[index+1])
+			return newPath
+	
+	def combineChildren(self,path1,path2):
+		size = len(path1)
+		#path1 = [x for x in path1 if x != self.goal]
+		#path2 = [x for x in path2 if x != self.goal]
+		newPath = []
+		index = 0
+		while len(newPath) < size:
+			if random.randint(0,1) == 0:
+				newPath = self.add_to_path(index, path1, path2, newPath)
+			else:	
+				newPath = self.add_to_path(index, path2, path1, newPath)
+		return newPath
+		
+
+	'''
+	#BROKEN
+	def combineChildren(self,child1,child2):
+		finalSize = len(child1) 
+		child1 = [x for x in child1 if x != self.goal]
+		child2 = [x for x in child2 if x != self.goal]
+		newPath = []
+		newPath.append(self.start)
+		for node in child1:
+			if len(newPath) != finalSize-1:
+				if random.randint(0,1) == 1: 
+					index = self.findIndex(node, child2)
+					if child2[index+1] not in newPath:
+						newPath.append(child2[index+1])
+					else:
+						index = self.findIndex(node, child1)
+						newPath.append(child1[index+1])	
+				else:
+					index = self.findIndex(node, child1)
+					if child1[index+1] not in newPath:
+						newPath.append(child1[index+1])
+					else:
+						index = self.findIndex(node, child2)
+						newPath.append(child2[index+1])
+			else:
+				break
+		newPath.append(self.goal)
+		return newPath
+	'''
+
 	def geneticAlgorithm(self,start,goal):
-		self.genRandomPaths(start,goal)
+		try:
+			self.genRandomPaths(start,goal)
+		except RuntimeError:
+			print "Recursion depth exceeded, only", len(self.randompaths), "random paths created."
+			pass #take what we can get
 		child1 = min(self.randompaths, key = lambda t: t[1])
-		self.path = child1[0] 
+		self.randompaths.remove(child1)
+		child2 = min(self.randompaths, key = lambda t: t[1])
+		self.path = self.combineChildren(child1[0],child2[0])
+		#self.path = child1[0] 
 
 def makeGraph():
 	pass

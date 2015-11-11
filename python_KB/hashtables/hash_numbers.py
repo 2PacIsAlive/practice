@@ -51,8 +51,10 @@ def main():
 	for number in data:
 		hash_table.add_(number)
 	print hash_table.collisions, "total collisions"
-	for item in data:
-		bucket = hash_table.find_(item)
+	print "finding data..."
+	print "printing all buckets..."
+	buckets = map(hash_table.find_,data)
+	print buckets 
 
 if __name__=="__main__":
 	main()

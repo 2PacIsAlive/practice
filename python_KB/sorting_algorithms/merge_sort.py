@@ -2,7 +2,7 @@
 
 import random
 
-def randomizeString(string):
+def randomizeString(string):#this function can use random.shuffle(string) instead...
 	rand = []
 	sortme = list(enumerate(string))
 	while sortme != []:
