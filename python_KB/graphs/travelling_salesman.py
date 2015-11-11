@@ -1,9 +1,13 @@
 #!usr/bin/env python
 
+import re
+import glob
 import random
 import math
-import networkx as nx
-import matplotlib.pyplot as plt
+import ipdb
+breakP = ipdb.set_trace
+#import networkx as nx
+#import matplotlib.pyplot as plt
 from pyprocessing import *
 
 class Node():
@@ -15,12 +19,16 @@ class Node():
 		self.y = random.randint(0,500)
 
 class Search():
-	def __init__(self,matrix):
+	def __init__(self,matrix, graph):
 		self.goal = None
 		self.path = []
+		self.randompaths = []
+		self.randomPathCost = 0
 		self.pathCost = 0
 		self.matrix = matrix
+		self.graph = graph
 		self.vertQueue = []
+		self.randomChoice = None
 
 	def findPath(self,node,goal):
 		node[0].visited = True
@@ -77,16 +85,168 @@ class Search():
 		else:
 			node.visited = True
 			self.travel(self.getMin(copy), goal)
+
+	def remainingUnvisited(self,adjacent):
+		for node in adjacent:
+			if node[1] != self.goal:
+				if node[1].visited == False:
+					return True
+		return False	
+
+	def getRandom(self,adjacent):
+		#print "searching for neighbors of", adjacent[0][0].ID
+		cpy = adjacent
+		#print cpy
+		rand = random.choice(cpy)
+		if rand[1] == self.goal:
+			if self.remainingUnvisited(cpy) == True:
+				#print "\nOPTIONS REMAIN:"
+				#for item in cpy:
+				#	print item[1].ID, item[1].visited
+				#cpy.remove(rand)
+				self.getRandom(cpy)
+			else:
+				#print "\nNO MORE REMAINING OPTIONS, SELECTING GOAL:"
+				#print rand[1].ID, rand[1].visited
+				self.randomPathCost += rand[2]
+				self.randomChoice = rand[1]
+				return
+		else:
+			if rand[1].visited == False:
+				#print "\nSELECTING RANDOM"
+				#print rand[1].ID
+				self.randomPathCost += rand[2]
+				self.randomChoice = rand[1]
+				return
+			else:
+				#print "ALREADY VISITED"
+				#print rand[1].ID, rand[1].visited
+				#cpy.remove(rand)
+				self.getRandom(cpy)
+
+	'''	
+	def getRandom(self,adjacent):
+		cpy = adjacent
+		cont = True
+		remaining = False
+		while cont == True:
+			rand = random.choice(cpy)
+			if rand[1] == self.goal:
+				for combo in cpy:
+					if combo[1].visited == False and combo[1] != self.goal:
+						remaining = True
+				if remaining == True:
+					pass
+				else:
+					self.randomChoice = rand[1]
+					cont = False	
 			
+			else:
+				if rand[1].visited == False:
+					self.randomChoice = rand[1]
+					cont = False
+				else:
+					pass	
+		return
+
+	def getRandom(self, adjacent):
+		if len(adjacent) == 1:
+			self.randomChoice = self.goal
+			return
+		rand = random.choice(adjacent)
+		if rand[1] != self.goal:
+			if rand[1].visited == False:
+				self.randomPathCost += rand[2]
+				self.randomChoice = rand[1]	
+				return 
+			else:
+				adjacent.remove(rand)
+				self.getRandom(adjacent)
+		else:
+			self.getRandom(adjacent)
+	'''
+
+	def genRandomPaths(self,node,goal):
+		self.path.append(node)
+		copy = self.matrix[node.ID]
+		if node == goal:
+			if node.visited == True:
+				#print "Path found!"
+				#for x in self.path:
+				#	print x.ID
+				self.randompaths.append((self.path,self.randomPathCost))
+				self.randomPathCost = 0
+				self.path = []
+				for i in self.graph:
+					i.visited = False
+				if len(self.randompaths) == 10:
+					return
+				else:
+					self.genRandomPaths(node,goal)
+			else:
+				node.visited = True
+				self.getRandom(copy)
+				self.genRandomPaths(self.randomChoice, goal)
+		else:
+			node.visited = True
+			self.getRandom(copy)
+			self.genRandomPaths(self.randomChoice, goal)
+	
+	def geneticAlgorithm(self,start,goal):
+		self.genRandomPaths(start,goal)
+		child1 = min(self.randompaths, key = lambda t: t[1])
+		self.path = child1[0] 
 
 def makeGraph():
 	pass
 
 def readGraph():
-	pass
-
+	files = glob.glob("data/*")
+	for f in files:
+		print f
+	data = raw_input("Choose your data file: ")
+	fo = open("data/"+data+".txt")
+	#fo.read()
+	lines = []
+	for line in fo:
+		vals = []
+		num = ""
+		count = 0
+		for char in line:
+			if char == " ":
+				vals.append(num)
+				num = ""
+			else:
+				num += char
+		vals.append(num[:-1])
+		lines.append(vals)
+	#num = num[:-1]
+	#vals.append(num)
+	#lines.append(vals)
+	fo.close()
+	graph = []
+	for line in lines:		
+		node = Node(int(line[0]))
+		node.x = int(line[1])
+		node.y = int(line[2])
+		graph.append(node)
+	matrix = adjacencyMatrix(graph)
+	return matrix, graph
+	
 def calcDistance(node1,node2):
 	return math.sqrt((math.pow((abs(node1.x - node2.x)),2)) + (math.pow((abs(node1.y - node2.y)),2))) 
+
+def adjacencyMatrix(graph):
+	matrix = []
+	for node in graph:
+		adjacent = []
+		for adj in graph:
+			if node != adj:
+				dist = calcDistance(node,adj)
+				adjacent.append((node, adj, dist))
+		matrix.append(adjacent)
+	return matrix
+
 
 def defaultGraph():
 	#returns an adjacency matrix of size n
@@ -94,28 +254,43 @@ def defaultGraph():
 	graph = []
 	for i in range(0,input("Enter number of vertices: ")):
 		graph.append(Node(i))
-	matrix = []
-	for node in graph:
-		adjacent = []
-		for adj in graph:
-			if node != adj:	
-				dist = calcDistance(node,adj)
-				adjacent.append((node, adj, dist))
-		matrix.append(adjacent)
+	matrix = adjacencyMatrix(graph)
 	return matrix, graph
+
+def saveGraph(matrix, graph):
+	files = glob.glob("data/*")
+	print "Preexisting graphs:"
+	for f in files:
+		print f
+	name = raw_input("Enter the name of the new graph: (using the same name will overwrite the existing graph) ") + ".txt"
+	fo = open("data/"+name,"w")
+	#for adj in matrix:
+	#	for connection in adj:
+	#		line = str(connection[0].ID) + " " + str(connection[0].x) + " " + str(connection[0].y) + " " + str(connection[1].ID) + " "  + str(connection[1].x) + " " + str(connection[1].y) + "\n"
+	#		fo.write(line)i
+	for node in graph:
+		line = str(node.ID) + " " + str(node.x) + " " + str(node.y) + "\n"
+		fo.write(line)
+	fo.close()
+	print "File written."
 
 def createGraph():
 	g = raw_input("Would you like to (1) make your own graph, (2) read in a graph file, or (3) use the default graph? ")
 	if g == "1":
 		makeGraph()
 	elif g == "2":
-		readGraph()
+		matrix, graph = readGraph()
+		search = Search(matrix, graph)
+		return search, matrix, graph
 	elif g == "3":
 		matrix, graph = defaultGraph()
-		search = Search(matrix)
+		search = Search(matrix, graph)
+		if raw_input("Would you like to save the randomly generated graph? (y/n) ") == "y":
+			saveGraph(matrix, graph)
 		return search, matrix, graph
 	else:
 		print "Unrecognized input"
+		createGraph()
 
 def showGraph(matrix):
 	g = nx.DiGraph()
@@ -143,15 +318,21 @@ def main():
 	print "Searching for optimal path from", randomSearchTask[0].ID, "to", randomSearchTask[0].ID, "ensuring all nodes are visited."
 	search.start = randomSearchTask[0]
 	search.goal = randomSearchTask[0]
-	search.travel(search.start, search.goal)
-	
+	algo = raw_input("Which algorithm would you like to use? ")
+	if algo == "nearest neighbor": 
+		search.travel(search.start, search.goal)
+		print "Total cost:", search.pathCost 
+	elif algo == "genetic":
+		search.geneticAlgorithm(search.start, search.goal)
+		#print "Fitness scores:"
+		#for path, score in search.randompaths:
+		#	print score	
 	#search.findPath(matrix[0][0],matrix[9][0])
 	'''
 	print "Path:"
 	for node in search.path:
 		print "Node: ", node.ID, "X: ", node.x, "Y: ", node.y
 	'''
-	print "Total cost:", search.pathCost 
 	if raw_input("Display graph? (y/n): ") == "y":
 		#showGraph(matrix)
 	#run()
