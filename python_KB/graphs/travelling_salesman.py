@@ -4,8 +4,8 @@ import re
 import glob
 import random
 import math
-import ipdb
-breakP = ipdb.set_trace
+#import ipdb
+#breakP = ipdb.set_trace
 #import networkx as nx
 #import matplotlib.pyplot as plt
 from pyprocessing import *
@@ -30,6 +30,7 @@ class Search():
 		self.vertQueue = []
 		self.randomChoice = None
 		self.numChildren = 50
+		self.mutatedPath = None		
 
 	def findPath(self,node,goal):
 		node[0].visited = True
@@ -160,68 +161,115 @@ class Search():
 				return index
 			index += 1
 		print "Node not found."
-
-	def add_to_path(self, index, list1, list2, newPath):
-		if newPath == []:
-			newPath.append(self.start)
-			return newPath
-		if len(newPath) == len(list1)-1:
-			newPath.append(self.goal)
-			return newPath
-		if index == len(list1)-1:
-			newIndex = findIndex(list2[index], list1)
-			newPath.append(list1[newIndex+1])
-			return newPath
-		if list1[index+1] not in newPath:
-			newPath.append(list1[index+1])
-			return newPath
-		else:
-			newPath.append(list2[index+1])
-			return newPath
 	
 	def combineChildren(self,path1,path2):
-		size = len(path1)
-		#path1 = [x for x in path1 if x != self.goal]
-		#path2 = [x for x in path2 if x != self.goal]
 		newPath = []
-		index = 0
-		while len(newPath) < size:
-			if random.randint(0,1) == 0:
-				newPath = self.add_to_path(index, path1, path2, newPath)
-			else:	
-				newPath = self.add_to_path(index, path2, path1, newPath)
-		return newPath
-		
-
-	'''
-	#BROKEN
-	def combineChildren(self,child1,child2):
-		finalSize = len(child1) 
-		child1 = [x for x in child1 if x != self.goal]
-		child2 = [x for x in child2 if x != self.goal]
-		newPath = []
-		newPath.append(self.start)
-		for node in child1:
-			if len(newPath) != finalSize-1:
-				if random.randint(0,1) == 1: 
-					index = self.findIndex(node, child2)
-					if child2[index+1] not in newPath:
-						newPath.append(child2[index+1])
-					else:
-						index = self.findIndex(node, child1)
-						newPath.append(child1[index+1])	
-				else:
-					index = self.findIndex(node, child1)
-					if child1[index+1] not in newPath:
-						newPath.append(child1[index+1])
-					else:
-						index = self.findIndex(node, child2)
-						newPath.append(child2[index+1])
+		newPath.append(path1[0])
+		print "\ncombining children..."
+		for node in newPath:
+			if len(newPath) == len(path1) - 1:
+				print "last item, adding goal"
+				print self.goal.ID
+				newPath.append(self.goal)
 			else:
-				break
-		newPath.append(self.goal)
-		return newPath
-	'''
+				path1_exists = False
+				path2_exists = False
+				path1_index = self.findIndex(node,path1) + 1
+				path2_index = self.findIndex(node,path2) + 1
+				if path1[path1_index] in newPath:
+					print "can't add path 1: ", path1[path1_index].ID
+					path1_exists = True
+				if path2[path2_index] in newPath:
+					print "can't add path 2: ", path2[path2_index].ID
+					path2_exists = True
+				if random.randint(0,11) > 3:
+					if path1_exists == False:
+						if path1[path1_index] == self.goal:
+							if len(newPath) == len(path1) - 1:
+								print "adding goal from path1"
+								print path1[path1_index].ID
+								newPath.append(path1[path1_index])
+							else:
+								print "tried to add goal from path1, not ready"
+								print path2[path2_index].ID
+								newPath.append(path2[path2_index])
+						else:
+							print "adding from path1"
+							print path1[path1_index].ID
+							newPath.append(path1[path1_index])
+					else:
+						print "path 1 next already in path, adding path2 next instead"
+						print path2[path2_index].ID
+						if path2_exists == False:
+							newPath.append(path2[path2_index])
+						else:	
+							#find random node that is not in path
+							found = False
+							for node in path2:
+								if found == False:
+									if node not in newPath:
+										newPath.append(node)
+										found = True
+				else:
+					if path2_exists == False:
+						if path2[path2_index] == self.goal:
+							if len(newPath) == len(path1) - 1:
+								print "adding goal from path2"
+								print path2[path2_index].ID
+								newPath.append(path2[path2_index])
+							else:
+								"tried to add goal from path2, not ready"
+								print path2[path2_index].ID
+								newPath.append(path1[path1_index])
+						else:
+							print "adding from path2"
+							print path2[path2_index].ID
+							newPath.append(path2[path2_index]) 
+					else:
+						print "path 2 next already in path, adding path1 next instead"
+						print path1[path1_index].ID
+						if path1_exists == False:
+							newPath.append(path1[path1_index])
+						else:
+							#find random node that is not in path
+							found = False
+							for node in path1:
+								if found == False:
+									if node not in newPath:
+										newPath.append(node)
+										found = True
+			if len(newPath) == len(path1):
+				print "new path:", self.calcDist(newPath)
+				for node in newPath:
+					print node.ID
+				return newPath
+
+	def calcDist(self,path):
+		index = 0
+		dist = 0
+		for node in path:
+			dist += calcDistance(path[index],path[index+1])
+			print "dist:", dist
+		return dist
+	
+	def mutate(self,path,original,newPath):
+		possibleVerts = [x for x in path if x != self.goal]
+		gene = random.choice(possibleVerts)
+		possibleVerts.remove(gene)
+		new = random.choice(possibleVerts)
+		newLoc = self.findIndex(new,path)
+		geneLoc = self.findIndex(gene,path)
+		path[newLoc] = gene
+		path[geneLoc] = new
+		#print "\nmutated path:"
+		#for node in path:
+		#	print node.ID
+		if len(newPath) < 100:
+			newPath.append((path,self.calcDist(path)))
+			self.mutate(original, original, newPath)
+		else:
+			self.mutatedPath = min(newPath, key = lambda t: t[1])
+			return
 
 	def geneticAlgorithm(self,start,goal):
 		try:
@@ -230,9 +278,23 @@ class Search():
 			print "Recursion depth exceeded, only", len(self.randompaths), "random paths created."
 			pass #take what we can get
 		child1 = min(self.randompaths, key = lambda t: t[1])
+		print "child1", child1[1]
+		for node in child1[0]:
+			print node.ID
 		self.randompaths.remove(child1)
 		child2 = min(self.randompaths, key = lambda t: t[1])
-		self.path = self.combineChildren(child1[0],child2[0])
+		print "\nchild2", child2[1]
+		for node in child2[0]:
+			print node.ID	
+		print
+		combination = self.combineChildren(child1[0],child2[0])
+		print "\nunmutated path:"
+		for node in combination:
+			print node.ID
+		self.mutate(combination,combination,[])
+		self.path = self.mutatedPath[0]
+		print "mutated path cost:", self.mutatedPath[1]
+		#self.path = min(self.mutate(combination), key = lambda t: t[1])
 		#self.path = child1[0] 
 
 def makeGraph():
@@ -313,7 +375,7 @@ def saveGraph(matrix, graph):
 	print "File written."
 
 def createGraph():
-	g = raw_input("Would you like to (1) make your own graph, (2) read in a graph file, or (3) use the default graph? ")
+	g = raw_input("Would you like to (1) make your own graph, (2) read in a graph file, or (3) create a random graph? ")
 	if g == "1":
 		makeGraph()
 	elif g == "2":
