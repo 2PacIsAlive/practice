@@ -1,0 +1,13 @@
+Customer ID,Home Owner,Marital Status,Annual Income,Loan Decision
+1,Yes,Single,125K,Yes
+2,No,Married,100K,Yes
+3,No,Single,75K,No
+4,Yes,Married,125K,Yes
+5,No,Divorced,100K,No
+6,No,Married,75K,Yes
+7,Yes,Divorced,150K,Yes
+8,No,Single,100K,No
+9,No,Married,75K,Yes
+10,Yes,Divorced,100K,No
+11,No,Married,100K,No
+12,No,Single,100K,Yes
