@@ -55,7 +55,7 @@ def draw():
         rect(point['x'], point['y'], 10, 10)
     cluster.update()
     cluster.recompute_centroids()
-    save('images/'+str(cluster.iteration+83)+'.png')
+    #save('images/'+str(cluster.iteration+83)+'.png')
     cluster.iteration += 1
 
 cluster = KMeansCluster(input("Clusters: "), input("Objects: "))
