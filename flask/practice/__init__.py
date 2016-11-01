@@ -2,10 +2,12 @@
 
 from flask import Flask
 from flask_autodoc import Autodoc
+
+from github import Github
 from os import environ
 
 host = "http://localhost:8000"
-githubUrl = "https://github.com/2PacIsAlive/practice/blob/"
+githubApi = Github('2PacIsAlive' + environ['GHP'])
 app = Flask(__name__, static_url_path='')
 
 app.config['HOST'] = host

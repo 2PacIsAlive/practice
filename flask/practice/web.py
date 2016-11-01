@@ -11,10 +11,10 @@ def indexPage():
     print '[' + timestamp + '] ' + str(request.user_agent) # TODO log this instead
     return render_template("index.html")
 
-@app.route('/<string:branch>/<string:file_>', methods=['GET'])
+@app.route('/<string:branch>/<string:lang>/<string:file_>', methods=['GET'])
 @auto.doc()
-def repoPage(branch, file_):
-    task = getContent.delay(branch + '/' + file_)
+def repoPage(branch, lang, file_):
+    task = getContent.delay(branch + '/' + lang + '/' + file_)
     obj = task.get()
 
     if path.isRoot:
