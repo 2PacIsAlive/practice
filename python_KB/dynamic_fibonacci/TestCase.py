@@ -1,8 +1,8 @@
 import unittest
 
-from dynamic_fibonacci import Solution
+from Solution import Solution
 
-class TestDynamicFibonacci(unittest.TestCase):
+class TestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
@@ -17,7 +17,7 @@ class TestDynamicFibonacci(unittest.TestCase):
             self.assertEqual(self.solution.fibonacci(n), term)
 
 def runTests():
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestDynamicFibonacci)
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestCase)
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 if __name__ == '__main__': runTests()
