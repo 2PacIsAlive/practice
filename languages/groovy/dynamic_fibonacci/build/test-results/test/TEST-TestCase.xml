@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="TestCase" tests="1" skipped="0" failures="0" errors="0" timestamp="2016-11-04T03:14:42" hostname="Jareds-MBP.hsd1.co.comcast.net" time="0.216">
+  <properties/>
+  <testcase name="computing the first ten terms" classname="TestCase" time="0.216"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
