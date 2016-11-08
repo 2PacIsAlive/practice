@@ -5,7 +5,7 @@
     <title>practice</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="stylesheet" href="./bootstrap.min.css" media="screen">
+    <link rel="stylesheet" href="../bootstrap.min.css" media="screen">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
@@ -23,7 +23,7 @@
         </div>
         <div class="navbar-collapse collapse" id="navbar-main">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="http://github.com/2PacIsAlive/practice">clone</a></li>
+            <li><a href="http://github.com/2PacIsAlive.com/">clone</a></li>
           </ul>
         </div>
       </div>
@@ -32,38 +32,22 @@
       <div class="page-header" id="banner">
         <div class="row">
           <div class="col-lg-8 col-md-7 col-sm-6">
-            <h1>welcome</h1>
+            <h1>{{language}}</h1>
           </div>
         </div>
-      </div>
       <div class="bs-docs-section">
-        <ul class="nav nav-tabs">
-        <li class="active"><a href="#projects" data-toggle="tab" aria-expanded="true">projects</a></li>
-        <li class=""><a href="#languages" data-toggle="tab" aria-expanded="false">languages</a></li>
-        </ul>
-        <div id="tabContent" class="tab-content">
-          <div class="tab-pane fade active in" id="projects">
-            <div class="bs-component">
-              <ul class="pagination">
-                {% for project in projects %}
-                  <li><a href="/projects/{{project}}">{{project}}</a></li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
-          <div class="tab-pane fade" id="languages">
-            <div class="bs-component">
-              <ul class="pagination">
-                {% for language in languages %}
-                  <li><a href="/languages/{{language}}">{{language}}</a></li>
-                {% endfor %}
-              </ul>
-            </div>
+        <div class="row">
+          <div class="bs-component">
+            <ul class="pagination">
+              {% for project in projects %}
+                <li><a href="/projects/{{project}}/{{language}}">{{project}}</a></li>
+              {% endfor %}
+            </ul>
           </div>
         </div>
       </div>
     </div>
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="./bootstrap.min.js"></script>
+    <script src="../bootstrap.min.js"></script>
   </body>
 </html>

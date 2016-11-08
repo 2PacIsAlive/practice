@@ -4,12 +4,11 @@ from proc import getContent
 from flask import render_template, request
 from datetime import datetime
 from glob import glob
+import random
 
 @app.route('/', methods=['GET'])
 @auto.doc()
 def indexPage():
-    timestamp = datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
-    print '[' + timestamp + '] ' + str(request.user_agent) # TODO log this instead
     languages = glob('../languages/*/')
     projects = []
     for language in languages:
@@ -19,6 +18,17 @@ def indexPage():
         projects=list(set([project.split('/')[3] for project in projects])),
         languages=[language.split('/')[2] for language in languages]
     )
+
+@app.route('/languages/<string:language>', methods=['GET'])
+@auto.doc()
+def languagePage(language):
+    projects = glob('../languages/' + language + '/*/')
+    return render_template(
+        "language.html",
+        language=language,
+        projects=list(set([project.split('/')[3] for project in projects])),
+    )
+
 '''
 @app.route('/<string:branch>/<string:lang>/<string:file_>', methods=['GET'])
 @auto.doc()
