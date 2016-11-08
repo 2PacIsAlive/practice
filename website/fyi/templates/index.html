@@ -14,7 +14,7 @@
     <div class="navbar navbar-default navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
-          <a href="../" class="navbar-brand">programming.fyi</a>
+          <a href="/" class="navbar-brand">programming.fyi</a>
           <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -38,22 +38,23 @@
       </div>
       <div class="bs-docs-section">
         <ul class="nav nav-tabs">
-        <li class="active"><a href="#projects" data-toggle="tab" aria-expanded="true">projects</a></li>
-        <li class=""><a href="#languages" data-toggle="tab" aria-expanded="false">languages</a></li>
+          <li class="active"><a href="#projects" data-toggle="tab" aria-expanded="true">projects</a></li>
+          <li class=""><a href="#languages" data-toggle="tab" aria-expanded="false">languages</a></li>
         </ul>
         <div id="tabContent" class="tab-content">
           <div class="tab-pane fade active in" id="projects">
-            <div class="bs-component">
-              <ul class="pagination">
-                {% for project in projects %}
-                  <li><a href="/projects/{{project}}">{{project}}</a></li>
-                {% endfor %}
-              </ul>
+            <div class="list-group">
+              {% for project in projects %}
+	      <a href="/projects/{{project["name"]}}" class="list-group-item">
+                <h4 class="list-group-item-heading">{{project["name"]}}</h4>
+                <p class="list-group-item-text">FYI: {{project["description"]}}</p>
+              </a>
+	      {% endfor %}
             </div>
-          </div>
+	  </div>
           <div class="tab-pane fade" id="languages">
             <div class="bs-component">
-              <ul class="pagination">
+              <ul class="pagination pagination-lg">
                 {% for language in languages %}
                   <li><a href="/languages/{{language}}">{{language}}</a></li>
                 {% endfor %}
