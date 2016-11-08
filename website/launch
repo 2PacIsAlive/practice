@@ -3,17 +3,7 @@
 from os import fork, system, environ
 
 def main():
-    celery_pid = fork()
-    if celery_pid == 0:
-        flower_pid = fork()
-        if flower_pid == 0:
-            print 'running flower'
-            system("celery flower -A practice:celery --broker=amqp://practice:" + environ['RBMQP'] + "@localhost:5672//")
-        else:
-            print 'running celery'
-            system("celery -A practice:celery worker --loglevel=info")
-    else:
-        print 'running practice'
-        system('gunicorn -b 0.0.0.0:8000 -w 4 practice:app')
+    print 'running programming.fyi'
+    system('gunicorn -b 0.0.0.0:80 -w 4 fyi:app')
 
 if __name__=='__main__': main()
