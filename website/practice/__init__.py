@@ -3,15 +3,13 @@
 from flask import Flask
 from flask_autodoc import Autodoc
 
-from github import Github
 from os import environ
 
 host = "http://localhost:8000"
-githubApi = Github('2PacIsAlive' + environ['GHP'])
 app = Flask(__name__, static_url_path='')
 
 app.config['HOST'] = host
-app.config['CELERY_ACCEPT_CONTENT'] = ['json', 'application/json'] #, 'pickle']
+app.config['CELERY_ACCEPT_CONTENT'] = ['json', 'application/json', 'pickle']
 app.config['CELERY_TASK_SERIALIZER'] = 'json'
 app.config['BACKEND_URL'] = 'amqp://practice:' + environ['RBMQP'] + '@localhost//'
 app.config['BROKER_URL'] = 'amqp://practice:' + environ['RBMQP'] + '@localhost//'

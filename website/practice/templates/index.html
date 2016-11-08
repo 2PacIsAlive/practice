@@ -75,20 +75,48 @@
           </div>
         </div>
       </div>
-
+    <div class="bs-docs-section">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="page-header">
+            <h1 id="languages">projects</h1>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="bs-component">
+          <ul class="pagination">
+            {% for project in projects %}
+              <li><a href="/projects/{{project}}">{{project}}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="page-header">
+            <h1 id="languages">languages</h1>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="bs-component">
+          <ul class="pagination">
+            {% for language in languages %}
+              <li><a href="/languages/{{language}}">{{language}}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
       <footer>
         <div class="row">
           <div class="col-lg-12">
-            <p><a href="http://github.com/2pacisalive">Jared</a> made it.</p>
+            <p>clone me on <a href="http://github.com/2pacisalive">github</a></p>
           </div>
         </div>
-
       </footer>
-
-
     </div>
-
-
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="../assets/js/custom.js"></script>
