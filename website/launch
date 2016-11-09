@@ -3,7 +3,6 @@
 from os import fork, system, environ
 
 def main():
-    print 'running programming.fyi'
     system('gunicorn -b 0.0.0.0:8000 -w 4 fyi:app')
 
 if __name__=='__main__': main()
