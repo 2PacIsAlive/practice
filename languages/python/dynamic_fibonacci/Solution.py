@@ -10,14 +10,3 @@ class Solution:
         else: f = self.fibonacci(n-1) + self.fibonacci(n-2)
         self.memo[n] = f
         return f
-
-def main():
-	n = input("Number of terms to compute: ")
-	val = fib(n)
-	print "__\n", val
-	print "Number of digits:", len(str(val))
-
-if __name__=="__main__":
-	memo = {}
-	main()
-

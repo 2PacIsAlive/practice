@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 import unittest
 
 from Solution import Solution
@@ -8,13 +10,8 @@ class TestCase(unittest.TestCase):
     def setUpClass(self):
         self.solution = Solution()
 
-    def testComputingTheFirstTenTerms(self):
-        correct_sequence = zip(
-            [n for n in range(10)],
-            [1, 1, 1, 2, 3, 5, 8, 13, 21, 34]
-        )
-        for n, term in correct_sequence:
-            self.assertEqual(self.solution.fibonacci(n), term)
+    def testMethod(self):
+        self.assertEqual(self.solution.method(), "correct_answer")
 
 def runTests():
     suite = unittest.TestLoader().loadTestsFromTestCase(TestCase)

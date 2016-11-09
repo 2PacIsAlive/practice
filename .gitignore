@@ -1,2 +1,3 @@
 *.pyc
 *.DS_Store
+languages/*/*/node_modules

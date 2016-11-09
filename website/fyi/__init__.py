@@ -5,8 +5,9 @@ from flask_autodoc import Autodoc
 
 from os import environ
 
-host = "http://localhost:80"
+host = "http://localhost:8000"
 app = Flask(__name__, static_url_path='')
+app.config['HOST'] = host
 auto = Autodoc(app)
 
 import fyi.web
